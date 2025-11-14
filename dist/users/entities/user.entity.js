@@ -26,6 +26,7 @@ let User = class User {
 exports.User = User;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    (0, graphql_1.Field)(() => graphql_1.ID),
     __metadata("design:type", String)
 ], User.prototype, "id", void 0);
 __decorate([
@@ -33,18 +34,22 @@ __decorate([
         type: 'text',
         unique: true
     }),
+    (0, graphql_1.Field)(() => String),
     __metadata("design:type", String)
 ], User.prototype, "email", void 0);
 __decorate([
     (0, typeorm_1.Column)('text'),
+    (0, graphql_1.Field)(() => String),
     __metadata("design:type", String)
 ], User.prototype, "fullName", void 0);
 __decorate([
     (0, typeorm_1.Column)('text'),
+    (0, graphql_1.Field)(() => String),
     __metadata("design:type", String)
 ], User.prototype, "password", void 0);
 __decorate([
     (0, typeorm_1.Column)('bool', { default: true }),
+    (0, graphql_1.Field)(() => Boolean),
     __metadata("design:type", Boolean)
 ], User.prototype, "isActive", void 0);
 __decorate([
@@ -53,6 +58,7 @@ __decorate([
         array: true,
         default: ['teacher']
     }),
+    (0, graphql_1.Field)(() => [String]),
     __metadata("design:type", Array)
 ], User.prototype, "roles", void 0);
 __decorate([

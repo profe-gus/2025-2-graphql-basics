@@ -1,0 +1,41 @@
+//signup
+curl 'http://localhost:9090/graphql' -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: http://localhost:9090' --data-binary '{"query":"# Write your query or mutation here\n\n\nmutation UserSignup($input: SignupInput!) {\n  signup(signupInput: $input) {\n    user {\n      fullName,\n      isActive,\n      email\n    },\n    token\n  }\n}\n\n\n\n","variables":{"input":{"fullName":"Daniel","email":"dan@mail.com","password":"holamundo"}}}' --compressed
+
+//Login
+curl 'http://localhost:9090/graphql' -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Connection: keep-alive' -H 'DNT: 1' -H 'Origin: http://localhost:9090' --data-binary '{"query":"mutation UserLogin($input: LoginInput!) {\n  login(loginInput: $input) {\n    user {\n        email,\n      \tisActive,\n    },\n    token\n  }\n}","variables":{"input":{"email":"david@mail.com","password":"holamundo"}}}' --compressed
+
+mutation UserLogin($input: LoginInput!) {
+  login(loginInput: $input) {
+    user {
+        email,
+      	isActive,
+    },
+    token
+  }
+}
+
+{
+    "input": {
+    "email": "david@mail.com",
+    "password": "holamundo"
+  }
+}
+
+mutation UserSignup($input: SignupInput!) {
+  signup(signupInput: $input) {
+    user {
+      fullName,
+      isActive,
+      email
+    },
+    token
+  }
+}
+
+{
+    "input": {
+    "fullName": "Daniel",
+    "email": "dan@mail.com",
+    "password": "holamundo"
+  }
+}

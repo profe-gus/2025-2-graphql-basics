@@ -5,28 +5,69 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
+const typeorm_1 = require("@nestjs/typeorm");
+const typeorm_2 = require("typeorm");
+const user_entity_1 = require("./entities/user.entity");
+const bcrypt_1 = __importDefault(require("bcrypt"));
 let UsersService = class UsersService {
-    create(createUserInput) {
-        return 'This action adds a new user';
+    userRepository;
+    constructor(userRepository) {
+        this.userRepository = userRepository;
     }
-    findAll() {
-        return `This action returns all users`;
+    async create(signupInput) {
+        try {
+            const newUser = this.userRepository.create({
+                ...signupInput,
+                password: bcrypt_1.default.hashSync(signupInput.password, 10)
+            });
+            return await this.userRepository.save(newUser);
+        }
+        catch (error) {
+            this.handleExceptions(error);
+        }
     }
-    findOne(id) {
-        return `This action returns a #${id} user`;
+    async findOneById(id) {
+        try {
+            return await this.userRepository.findOneByOrFail({ id });
+        }
+        catch (error) {
+            throw new common_1.NotFoundException(`User ${id} not found`);
+        }
     }
-    update(id, updateUserInput) {
-        return `This action updates a #${id} user`;
+    async findOneByEmail(email) {
+        try {
+            return await this.userRepository.findOneByOrFail({ email });
+        }
+        catch (error) {
+            throw new common_1.NotFoundException(`User ${email} not found`);
+        }
     }
-    remove(id) {
-        return `This action removes a #${id} user`;
+    handleExceptions(error) {
+        if (error.code === '23505') {
+            throw new common_1.BadRequestException(error.detail.replace('key', ''));
+        }
+        if (error.code === 'error-001') {
+            throw new common_1.BadRequestException(error.detail.replace('key', ''));
+        }
+        throw new common_1.InternalServerErrorException('Please check server logs');
     }
 };
 exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([
-    (0, common_1.Injectable)()
+    (0, common_1.Injectable)(),
+    __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __metadata("design:paramtypes", [typeorm_2.Repository])
 ], UsersService);
 //# sourceMappingURL=users.service.js.map

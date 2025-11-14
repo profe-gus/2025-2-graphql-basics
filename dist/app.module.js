@@ -10,12 +10,22 @@ exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const users_module_1 = require("./users/users.module");
+const config_1 = require("@nestjs/config");
+const auth_module_1 = require("./auth/auth.module");
+const graphql_1 = require("@nestjs/graphql");
+const apollo_1 = require("@nestjs/apollo");
+const path_1 = require("path");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [users_module_1.UsersModule,
+            config_1.ConfigModule.forRoot(),
+            graphql_1.GraphQLModule.forRoot({
+                driver: apollo_1.ApolloDriver,
+                autoSchemaFile: (0, path_1.join)(process.cwd(), 'src/schema.gql'),
+            }),
             typeorm_1.TypeOrmModule.forRoot({
                 type: 'postgres',
                 host: process.env.DB_HOST,
@@ -26,7 +36,7 @@ exports.AppModule = AppModule = __decorate([
                 autoLoadEntities: true,
                 synchronize: true
             }),
-        ],
+            auth_module_1.AuthModule,],
         controllers: [],
         providers: [],
     })

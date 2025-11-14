@@ -1,9 +1,20 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
+import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { join } from 'path';
+
 
 @Module({
   imports: [UsersModule,
+    ConfigModule.forRoot(),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -14,6 +25,7 @@ import { UsersModule } from './users/users.module';
       autoLoadEntities: true,
       synchronize: true //Solo usarla en ambientes bajos, en prod hacer migraciones
     }),
+    AuthModule,
   ],
   controllers: [],
   providers: [],

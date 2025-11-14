@@ -1,9 +1,11 @@
-import { CreateUserInput } from './dto/create-user.input';
-import { UpdateUserInput } from './dto/update-user.input';
+import { Repository } from 'typeorm';
+import { User } from './entities/user.entity';
+import { SignupInput } from 'src/auth/dto/signup.input';
 export declare class UsersService {
-    create(createUserInput: CreateUserInput): string;
-    findAll(): string;
-    findOne(id: number): string;
-    update(id: number, updateUserInput: UpdateUserInput): string;
-    remove(id: number): string;
+    private readonly userRepository;
+    constructor(userRepository: Repository<User>);
+    create(signupInput: SignupInput): Promise<User>;
+    findOneById(id: string): Promise<User>;
+    findOneByEmail(email: string): Promise<User>;
+    private handleExceptions;
 }

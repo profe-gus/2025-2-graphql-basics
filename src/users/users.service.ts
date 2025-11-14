@@ -1,26 +1,58 @@
-import { Injectable } from '@nestjs/common';
-import { CreateUserInput } from './dto/create-user.input';
-import { UpdateUserInput } from './dto/update-user.input';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from './entities/user.entity';
+import { SignupInput } from 'src/auth/dto/signup.input';
+import bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
-  create(createUserInput: CreateUserInput) {
-    return 'This action adds a new user';
+
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>
+  ){}
+
+  async create(signupInput: SignupInput): Promise<User> {
+    try{
+      const newUser = this.userRepository.create(
+        {
+          ...signupInput,
+          password: bcrypt.hashSync(signupInput.password, 10)
+        }
+      );
+      return await this.userRepository.save(newUser);
+      
+    }catch(error){
+      this.handleExceptions(error);
+    }
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findOneById(id: string) {
+    try{
+      return await this.userRepository.findOneByOrFail({id});
+    }catch(error){
+      throw new NotFoundException(`User ${id} not found`);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOneByEmail(email: string) {
+    try{
+      return await this.userRepository.findOneByOrFail({email});
+    }catch(error){
+      throw new NotFoundException(`User ${email} not found`);
+    }
   }
 
-  update(id: number, updateUserInput: UpdateUserInput) {
-    return `This action updates a #${id} user`;
+  private handleExceptions(error: any): never{
+    if(error.code === '23505'){
+      throw new BadRequestException(error.detail.replace('key', ''));
+    }
+    if(error.code === 'error-001'){
+      throw new BadRequestException(error.detail.replace('key', ''));
+    }
+    throw new InternalServerErrorException('Please check server logs');
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
-  }
+
 }
